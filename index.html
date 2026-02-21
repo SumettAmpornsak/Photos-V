@@ -1,0 +1,2008 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhotoVault</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --card: #1e1e1e;
+      --border: rgba(255, 255, 255, 0.06);
+      --glass: rgba(255, 255, 255, 0.03);
+      --accent: #f0c040;
+      --accent2: #e8703a;
+      --text: #f0ede8;
+      --muted: #6b6b6b;
+      --danger: #e94560;
+      --radius: 14px;
+      --t: 0.25s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: 'Kanit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-weight: 300;
+      overflow-x: hidden
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg)
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(240, 192, 64, .3);
+      border-radius: 3px
+    }
+
+    /* LOGIN */
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at 30% 40%, rgba(240, 192, 64, .06) 0%, transparent 55%),
+        radial-gradient(ellipse at 75% 70%, rgba(232, 112, 58, .06) 0%, transparent 55%), var(--bg);
+      position: relative
+    }
+
+    .login-page::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none
+    }
+
+    .login-card {
+      position: relative;
+      z-index: 1;
+      width: min(420px, 92vw);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 3rem 2.5rem 2.5rem;
+      text-align: center;
+      box-shadow: 0 32px 80px rgba(0, 0, 0, .6)
+    }
+
+    .login-logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.75rem;
+      font-size: 2.4rem;
+      box-shadow: 0 12px 40px rgba(240, 192, 64, .25)
+    }
+
+    .login-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -1px
+    }
+
+    .login-title em {
+      color: var(--accent);
+      font-style: normal
+    }
+
+    .login-sub {
+      color: var(--muted);
+      font-size: .9rem;
+      margin: .4rem 0 2.5rem;
+      line-height: 1.6
+    }
+
+    .btn-google {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #fff;
+      color: #1a1a1a;
+      border: none;
+      border-radius: 12px;
+      padding: .9rem 1.5rem;
+      font-family: 'Kanit', sans-serif;
+      font-size: .95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--t);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .3)
+    }
+
+    .btn-google:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, .4)
+    }
+
+    .btn-google:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+      transform: none
+    }
+
+    .btn-google img {
+      width: 20px
+    }
+
+    .login-note {
+      margin-top: 1.5rem;
+      font-size: .72rem;
+      color: var(--muted)
+    }
+
+    /* LAYOUT */
+    .app-wrap {
+      display: flex;
+      min-height: 100vh
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 230px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      z-index: 200;
+      transition: transform var(--t)
+    }
+
+    .sidebar-logo {
+      padding: 1.4rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -.3px
+    }
+
+    .logo-text em {
+      color: var(--accent);
+      font-style: normal
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: .85rem .7rem;
+      overflow-y: auto
+    }
+
+    .nav-group-label {
+      font-size: .62rem;
+      text-transform: uppercase;
+      letter-spacing: 1.8px;
+      color: var(--muted);
+      padding: .6rem .75rem .3rem
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: .62rem .85rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--t);
+      font-size: .875rem;
+      color: var(--muted);
+      margin-bottom: 1px;
+      user-select: none
+    }
+
+    .nav-link:hover {
+      background: var(--glass);
+      color: var(--text)
+    }
+
+    .nav-link.active {
+      background: rgba(240, 192, 64, .1);
+      color: var(--accent);
+      font-weight: 500
+    }
+
+    .nav-link i {
+      font-size: 1rem;
+      width: 18px;
+      text-align: center;
+      flex-shrink: 0
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      font-size: .62rem;
+      background: rgba(240, 192, 64, .15);
+      color: var(--accent);
+      border-radius: 99px;
+      padding: 1px 7px;
+      font-weight: 500
+    }
+
+    .nav-badge.red {
+      background: rgba(233, 69, 96, .15);
+      color: var(--danger)
+    }
+
+    .sidebar-footer {
+      border-top: 1px solid var(--border);
+      padding: 1rem 1.2rem
+    }
+
+    .storage-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: .7rem;
+      color: var(--muted);
+      margin-bottom: 5px
+    }
+
+    .storage-track {
+      height: 3px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden
+    }
+
+    .storage-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 99px;
+      transition: width .5s
+    }
+
+    .user-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: .9rem;
+      padding-top: .9rem;
+      border-top: 1px solid var(--border)
+    }
+
+    .user-av {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid var(--accent);
+      flex-shrink: 0
+    }
+
+    .user-info-text {
+      flex: 1;
+      min-width: 0
+    }
+
+    .user-name {
+      font-size: .8rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .user-email {
+      font-size: .67rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .btn-logout {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 7px;
+      transition: var(--t);
+      display: flex;
+      align-items: center
+    }
+
+    .btn-logout:hover {
+      color: var(--danger);
+      background: rgba(233, 69, 96, .1)
+    }
+
+    /* MAIN */
+    .main {
+      margin-left: 230px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh
+    }
+
+    /* TOPBAR */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13, 13, 13, .9);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      padding: .8rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: .75rem
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      max-width: 480px
+    }
+
+    .search-box i {
+      position: absolute;
+      left: .8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: .85rem
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: .58rem .9rem .58rem 2.4rem;
+      color: var(--text);
+      font-family: 'Kanit', sans-serif;
+      font-size: .875rem;
+      font-weight: 300;
+      outline: none;
+      transition: var(--t)
+    }
+
+    .search-input::placeholder {
+      color: var(--muted)
+    }
+
+    .search-input:focus {
+      border-color: rgba(240, 192, 64, .4);
+      background: var(--glass)
+    }
+
+    .topbar-right {
+      display: flex;
+      gap: 6px;
+      margin-left: auto
+    }
+
+    .tbtn {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      transition: var(--t);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .9rem
+    }
+
+    .tbtn:hover {
+      border-color: rgba(240, 192, 64, .3);
+      color: var(--text)
+    }
+
+    .tbtn.on {
+      background: rgba(240, 192, 64, .1);
+      border-color: var(--accent);
+      color: var(--accent)
+    }
+
+    .tbtn label {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%
+    }
+
+    .tbtn input {
+      display: none
+    }
+
+    /* SELECT BAR */
+    .sel-bar {
+      position: fixed;
+      top: 0;
+      left: 230px;
+      right: 0;
+      z-index: 300;
+      background: linear-gradient(135deg, var(--accent2), #c0562c);
+      padding: .8rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      transform: translateY(-100%);
+      transition: var(--t);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .4)
+    }
+
+    .sel-bar.show {
+      transform: translateY(0)
+    }
+
+    .sel-count {
+      font-weight: 600;
+      font-size: .9rem
+    }
+
+    .sel-btn {
+      background: rgba(255, 255, 255, .15);
+      border: none;
+      color: white;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--t);
+      font-size: .9rem
+    }
+
+    .sel-btn:hover {
+      background: rgba(255, 255, 255, .28)
+    }
+
+    /* UPLOAD ZONE */
+    .upload-zone {
+      margin: 1.2rem 1.4rem 0;
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--t);
+      position: relative;
+      overflow: hidden;
+      background: var(--glass)
+    }
+
+    .upload-zone:hover,
+    .upload-zone.drag {
+      border-color: var(--accent);
+      background: rgba(240, 192, 64, .04)
+    }
+
+    .upload-zone input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer
+    }
+
+    .upload-ico {
+      font-size: 2rem;
+      color: var(--accent);
+      margin-bottom: 4px
+    }
+
+    .upload-label {
+      font-size: .9rem;
+      font-weight: 400
+    }
+
+    .upload-hint {
+      font-size: .75rem;
+      color: var(--muted);
+      margin-top: 3px
+    }
+
+    .upload-bar-wrap {
+      height: 3px;
+      background: var(--border);
+      border-radius: 99px;
+      margin-top: .85rem;
+      overflow: hidden;
+      display: none
+    }
+
+    .upload-bar-wrap.show {
+      display: block
+    }
+
+    .upload-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width .35s ease
+    }
+
+    /* CONFIG BANNER */
+    .cfg-banner {
+      margin: 1rem 1.4rem 0;
+      background: rgba(240, 192, 64, .07);
+      border: 1px solid rgba(240, 192, 64, .25);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      font-size: .82rem
+    }
+
+    .cfg-banner strong {
+      color: var(--accent)
+    }
+
+    .cfg-banner code {
+      background: rgba(255, 255, 255, .08);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: .78rem
+    }
+
+    /* DATE HEADER */
+    /* COLLAPSIBLE DATE GROUP */
+    .date-header {
+      padding: 1.2rem 1.4rem .4rem;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      border-radius: 10px;
+      transition: background var(--t)
+    }
+
+    .date-header:hover {
+      background: rgba(255, 255, 255, .03)
+    }
+
+    .date-label {
+      font-size: .95rem;
+      font-weight: 500
+    }
+
+    .date-count {
+      font-size: .75rem;
+      color: var(--muted)
+    }
+
+    .date-toggle {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: .8rem;
+      transition: transform var(--t);
+      flex-shrink: 0
+    }
+
+    .date-toggle.collapsed {
+      transform: rotate(-90deg)
+    }
+
+    .date-group-body {
+      overflow: hidden;
+      transition: max-height .35s cubic-bezier(.4, 0, .2, 1), opacity .25s ease
+    }
+
+    .date-group-body.hide {
+      max-height: 0 !important;
+      opacity: 0;
+      pointer-events: none
+    }
+
+
+    /* PHOTO GRID */
+    .photo-grid {
+      padding: 0 1.4rem;
+      columns: 4;
+      column-gap: 8px
+    }
+
+    .photo-grid.list {
+      columns: unset;
+      display: flex;
+      flex-direction: column;
+      gap: 6px
+    }
+
+    .p-card {
+      break-inside: avoid;
+      margin-bottom: 8px;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      background: var(--card);
+      transition: transform var(--t)
+    }
+
+    .p-card:hover {
+      transform: translateY(-1px)
+    }
+
+    .p-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform .45s ease
+    }
+
+    .p-card:hover img {
+      transform: scale(1.04)
+    }
+
+    .p-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, .65) 0%, transparent 45%);
+      opacity: 0;
+      transition: var(--t);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 7px
+    }
+
+    .p-card:hover .p-overlay {
+      opacity: 1
+    }
+
+    .p-top {
+      display: flex;
+      justify-content: flex-end;
+      gap: 5px
+    }
+
+    .p-btn {
+      width: 28px;
+      height: 28px;
+      background: rgba(0, 0, 0, .55);
+      backdrop-filter: blur(6px);
+      border: none;
+      border-radius: 7px;
+      color: white;
+      font-size: .75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--t)
+    }
+
+    .p-btn:hover {
+      background: var(--accent);
+      color: var(--bg)
+    }
+
+    .p-btn.fav-on {
+      color: #ff6b6b
+    }
+
+    .p-date {
+      font-size: .68rem;
+      color: rgba(255, 255, 255, .65)
+    }
+
+    .p-checkbox {
+      position: absolute;
+      top: 7px;
+      left: 7px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, .6);
+      background: rgba(0, 0, 0, .4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: .7rem;
+      cursor: pointer;
+      z-index: 2;
+      transition: var(--t)
+    }
+
+    .sel-mode .p-checkbox {
+      display: flex
+    }
+
+    .p-card.picked .p-checkbox {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg)
+    }
+
+    .p-card.picked::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 2.5px solid var(--accent);
+      border-radius: 10px;
+      pointer-events: none
+    }
+
+    /* LIST VIEW */
+    .photo-grid.list .p-card {
+      display: flex;
+      align-items: center;
+      gap: .85rem;
+      padding: .55rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 0;
+      break-inside: unset
+    }
+
+    .photo-grid.list .p-card img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 7px;
+      flex-shrink: 0
+    }
+
+    .photo-grid.list .p-overlay {
+      display: none
+    }
+
+    .p-list-info {
+      flex: 1;
+      min-width: 0
+    }
+
+    .p-list-name {
+      font-size: .85rem;
+      font-weight: 400;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .p-list-meta {
+      font-size: .7rem;
+      color: var(--muted);
+      margin-top: 2px
+    }
+
+    .p-list-actions {
+      display: flex;
+      gap: 5px;
+      flex-shrink: 0
+    }
+
+    /* EMPTY */
+    .empty {
+      padding: 5rem 2rem;
+      text-align: center;
+      color: var(--muted)
+    }
+
+    .empty-ico {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: .3
+    }
+
+    .empty-text {
+      font-size: 1rem;
+      font-weight: 400
+    }
+
+    .empty-sub {
+      font-size: .82rem;
+      margin-top: .3rem
+    }
+
+    /* ALBUMS */
+    .album-grid {
+      padding: 0 1.4rem 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+      gap: 10px
+    }
+
+    .album-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      transition: var(--t)
+    }
+
+    .album-card:hover {
+      border-color: rgba(240, 192, 64, .3);
+      transform: translateY(-2px)
+    }
+
+    .album-thumb {
+      width: 100%;
+      height: 120px;
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: var(--muted)
+    }
+
+    .album-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .album-foot {
+      padding: .75rem
+    }
+
+    .album-name {
+      font-size: .88rem;
+      font-weight: 500
+    }
+
+    .album-cnt {
+      font-size: .72rem;
+      color: var(--muted);
+      margin-top: 2px
+    }
+
+    /* LIGHTBOX */
+    .lb {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, .96);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s
+    }
+
+    .lb.open {
+      opacity: 1;
+      pointer-events: all
+    }
+
+    .lb-img {
+      max-width: 88vw;
+      max-height: 84vh;
+      object-fit: contain;
+      border-radius: 10px;
+      transform: scale(.94);
+      transition: transform .3s ease
+    }
+
+    .lb.open .lb-img {
+      transform: scale(1)
+    }
+
+    .lb-close {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.2rem;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .08);
+      border: none;
+      color: white;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: var(--t);
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .lb-close:hover {
+      background: var(--danger)
+    }
+
+    .lb-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .08);
+      border: none;
+      color: white;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: var(--t);
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .lb-nav:hover {
+      background: var(--accent);
+      color: var(--bg)
+    }
+
+    .lb-nav.lp {
+      left: 1.2rem
+    }
+
+    .lb-nav.rp {
+      right: 1.2rem
+    }
+
+    .lb-caption {
+      position: absolute;
+      bottom: 1.2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, .55);
+      backdrop-filter: blur(8px);
+      padding: .4rem 1.1rem;
+      border-radius: 99px;
+      font-size: .78rem;
+      color: rgba(255, 255, 255, .7);
+      white-space: nowrap
+    }
+
+    .lb-actions {
+      position: absolute;
+      top: 1.2rem;
+      left: 1.2rem;
+      display: flex;
+      gap: 8px
+    }
+
+    .lb-act-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .08);
+      border: none;
+      color: white;
+      cursor: pointer;
+      transition: var(--t);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .9rem
+    }
+
+    .lb-act-btn:hover {
+      background: var(--accent);
+      color: var(--bg)
+    }
+
+    /* MODAL */
+    .modal-content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      color: var(--text);
+      font-family: 'Kanit', sans-serif
+    }
+
+    .modal-header {
+      border-bottom: 1px solid var(--border);
+      padding: 1.1rem 1.5rem
+    }
+
+    .modal-body {
+      padding: 1.25rem 1.5rem
+    }
+
+    .modal-footer {
+      border-top: 1px solid var(--border);
+      padding: 1rem 1.5rem
+    }
+
+    .form-label {
+      font-size: .85rem;
+      color: var(--muted);
+      margin-bottom: 6px
+    }
+
+    .form-control {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      color: var(--text);
+      font-family: 'Kanit', sans-serif;
+      font-size: .9rem;
+      font-weight: 300
+    }
+
+    .form-control:focus {
+      background: var(--card);
+      border-color: rgba(240, 192, 64, .5);
+      color: var(--text);
+      box-shadow: 0 0 0 3px rgba(240, 192, 64, .12)
+    }
+
+    .form-control::placeholder {
+      color: var(--muted)
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg);
+      font-family: 'Kanit', sans-serif;
+      font-weight: 500;
+      border-radius: 9px
+    }
+
+    .btn-primary:hover {
+      background: #d4a830;
+      border-color: #d4a830;
+      color: var(--bg)
+    }
+
+    .btn-secondary {
+      background: var(--card);
+      border-color: var(--border);
+      color: var(--text);
+      font-family: 'Kanit', sans-serif;
+      border-radius: 9px
+    }
+
+    .btn-close {
+      filter: invert(1) opacity(.5)
+    }
+
+    /* TOAST */
+    .toast-stack {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 7px
+    }
+
+    .t-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: .7rem 1rem;
+      font-size: .82rem;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 240px;
+      animation: tup .3s ease;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .4)
+    }
+
+    @keyframes tup {
+      from {
+        transform: translateY(14px);
+        opacity: 0
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1
+      }
+    }
+
+    /* SKELETON */
+    .skel {
+      background: linear-gradient(90deg, var(--card) 25%, var(--surface) 50%, var(--card) 75%);
+      background-size: 200% 100%;
+      animation: shim 1.4s infinite;
+      border-radius: 10px
+    }
+
+    @keyframes shim {
+      0% {
+        background-position: -200% 0
+      }
+
+      100% {
+        background-position: 200% 0
+      }
+    }
+
+    /* PAGE HERO */
+    .page-hero {
+      padding: 1.5rem 1.4rem .5rem
+    }
+
+    .page-hero h2 {
+      font-size: 1.35rem;
+      font-weight: 600
+    }
+
+    .page-hero p {
+      font-size: .82rem;
+      color: var(--muted);
+      margin-top: 3px
+    }
+
+    .pb-safe {
+      padding-bottom: 2.5rem
+    }
+
+    /* ALBUM DETAIL */
+    .album-detail-header {
+      padding: 1.2rem 1.4rem .5rem;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .btn-back {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: var(--t);
+      flex-shrink: 0
+    }
+
+    .btn-back:hover {
+      color: var(--text);
+      border-color: rgba(240, 192, 64, .3)
+    }
+
+    .album-detail-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      flex: 1
+    }
+
+    .album-detail-sub {
+      font-size: .8rem;
+      color: var(--muted);
+      margin-top: 2px
+    }
+
+    .album-detail-actions {
+      display: flex;
+      gap: 7px;
+      margin-left: auto
+    }
+
+    .photo-picker {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      max-height: 55vh;
+      overflow-y: auto;
+      padding: 2px
+    }
+
+    .picker-item {
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      aspect-ratio: 1;
+      background: var(--card)
+    }
+
+    .picker-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .3s
+    }
+
+    .picker-item:hover img {
+      transform: scale(1.06)
+    }
+
+    .picker-sel::after {
+      content: "✓";
+      position: absolute;
+      inset: 0;
+      background: rgba(240, 192, 64, .55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--bg)
+    }
+
+    .picker-in::after {
+      content: "อยู่แล้ว";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, .5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .7rem;
+      color: rgba(255, 255, 255, .5)
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:900px) {
+      .sidebar {
+        transform: translateX(-100%)
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 4px 0 40px rgba(0, 0, 0, .6)
+      }
+
+      .main {
+        margin-left: 0
+      }
+
+      .sel-bar {
+        left: 0
+      }
+
+      .photo-grid {
+        columns: 2
+      }
+    }
+
+    @media(min-width:1600px) {
+      .photo-grid {
+        columns: 5
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+
+    <!-- LOGIN -->
+    <div class="login-page" v-if="!user">
+      <div class="login-card" data-aos="fade-up" data-aos-duration="550">
+        <div class="login-logo">📷</div>
+        <h1 class="login-title">Photo<em>Vault</em></h1>
+        <p class="login-sub">คลังภาพส่วนตัว ปลอดภัย สวยงาม<br>จัดเก็บด้วย Firebase + ImgBB Cloud</p>
+        <button class="btn-google" @click="loginGoogle" :disabled="loading">
+          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="G" />
+          <span>{{ loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบด้วย Google' }}</span>
+        </button>
+        <p class="login-note">รูปภาพของคุณเป็นส่วนตัว · ปลอดภัย · เข้าถึงได้ทุกที่</p>
+      </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div class="app-wrap" v-else>
+
+      <!-- SIDEBAR -->
+      <nav class="sidebar" :class="{open:sideOpen}">
+        <div class="sidebar-logo">
+          <div class="logo-icon">📷</div>
+          <span class="logo-text">Photo<em>Vault</em></span>
+        </div>
+        <div class="sidebar-nav">
+          <div class="nav-group-label">ห้องสมุด</div>
+          <div class="nav-link" :class="{active:view==='photos'}" @click="setView('photos')">
+            <i class="bi bi-images"></i> รูปภาพทั้งหมด
+            <span class="nav-badge" v-if="allPhotos.length">{{ allPhotos.length }}</span>
+          </div>
+          <div class="nav-link" :class="{active:view==='favorites'}" @click="setView('favorites')">
+            <i class="bi bi-heart"></i> รายการโปรด
+            <span class="nav-badge" v-if="favPhotos.length">{{ favPhotos.length }}</span>
+          </div>
+          <div class="nav-group-label" style="margin-top:.5rem">จัดระเบียบ</div>
+          <div class="nav-link" :class="{active:view==='albums'}" @click="setView('albums')">
+            <i class="bi bi-collection"></i> อัลบั้ม
+          </div>
+          <div class="nav-link" :class="{active:view==='trash'}" @click="setView('trash')">
+            <i class="bi bi-trash3"></i> ถังขยะ
+            <span class="nav-badge red" v-if="trashPhotos.length">{{ trashPhotos.length }}</span>
+          </div>
+        </div>
+        <div class="sidebar-footer">
+          <div class="storage-label">
+            <span>ImgBB + Firebase</span><span>{{ photos.length }} รูป</span>
+          </div>
+          <div class="storage-track">
+            <div class="storage-fill" :style="{width:Math.min(photos.length/500*100,100)+'%'}"></div>
+          </div>
+          <div class="user-row">
+            <img :src="user.photoURL||'https://ui-avatars.com/api/?name=U&background=f0c040&color=0d0d0d'"
+              class="user-av" />
+            <div class="user-info-text">
+              <div class="user-name">{{ user.displayName }}</div>
+              <div class="user-email">{{ user.email }}</div>
+            </div>
+            <button class="btn-logout" @click="logout"><i class="bi bi-box-arrow-right"></i></button>
+          </div>
+        </div>
+      </nav>
+
+      <!-- SELECT BAR -->
+      <div class="sel-bar" :class="{show:selected.length}">
+        <button class="sel-btn" @click="clearSel"><i class="bi bi-x-lg"></i></button>
+        <span class="sel-count">เลือก {{ selected.length }} รายการ</span>
+        <button class="sel-btn" @click="bulkFav"><i class="bi bi-heart"></i></button>
+        <button class="sel-btn" @click="bulkDel"><i class="bi bi-trash3"></i></button>
+        <button class="sel-btn" @click="bulkDl"><i class="bi bi-download"></i></button>
+      </div>
+
+      <!-- MAIN -->
+      <div class="main">
+        <!-- TOPBAR -->
+        <div class="topbar">
+          <button class="tbtn d-lg-none" @click="sideOpen=!sideOpen" style="border:none"><i
+              class="bi bi-list"></i></button>
+          <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input class="search-input" type="text" placeholder="ค้นหารูปภาพ..." v-model="q" />
+          </div>
+          <div class="topbar-right">
+            <div class="tbtn" :class="{on:vMode==='grid'}" @click="vMode='grid'"><i class="bi bi-grid-3x3-gap"></i>
+            </div>
+            <div class="tbtn" :class="{on:vMode==='list'}" @click="vMode='list'"><i class="bi bi-list-ul"></i></div>
+            <div class="tbtn" :class="{on:selMode}" @click="selMode=!selMode;selected=[]"><i
+                class="bi bi-check2-square"></i></div>
+            <div class="tbtn" v-if="view==='photos'" @click="collapseAll" title="หุบทั้งหมด"><i
+                class="bi bi-arrows-collapse"></i></div>
+            <div class="tbtn" v-if="view==='photos' && collapsedGroups.length" @click="expandAll" title="ขยายทั้งหมด"><i
+                class="bi bi-arrows-expand"></i></div>
+            <div class="tbtn"><label><input type="file" accept="image/*" multiple @change="uploadFiles" /><i
+                  class="bi bi-cloud-upload"></i></label></div>
+          </div>
+        </div>
+
+        <!-- PHOTOS VIEW -->
+        <div v-if="view==='photos'" class="pb-safe">
+          <!-- Config warn -->
+          <div class="cfg-banner" v-if="!configOk" data-aos="fade-down">
+            ⚙️ <strong>ต้องตั้งค่าก่อนใช้งาน:</strong>
+            แก้ไข <code>FB_CONFIG</code> และ <code>IMGBB_KEY</code> ในส่วน &lt;script&gt; ด้านล่างของไฟล์ แล้ว reload
+            หน้า
+          </div>
+
+          <!-- Upload Zone -->
+          <div class="upload-zone" :class="{drag:dragging}" @dragover.prevent="dragging=true"
+            @dragleave="dragging=false" @drop.prevent="onDrop">
+            <input type="file" accept="image/*" multiple @change="uploadFiles" />
+            <div class="upload-ico">☁️</div>
+            <div class="upload-label">ลากวางหรือคลิกเพื่ออัปโหลดรูปภาพ</div>
+            <div class="upload-hint">JPG · PNG · GIF · WebP · อัปโหลดได้หลายไฟล์พร้อมกัน</div>
+            <div class="upload-bar-wrap" :class="{show:uploading}">
+              <div class="upload-bar" :style="{width:upPct+'%'}"></div>
+            </div>
+          </div>
+
+          <!-- Skeleton -->
+          <div v-if="loading" style="padding:1rem 1.4rem">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+              <div v-for="n in 8" :key="n" class="skel" :style="{height:(140+n*18)+'px'}"></div>
+            </div>
+          </div>
+
+          <!-- Empty -->
+          <div v-else-if="filtered.length===0" class="empty" data-aos="fade-up">
+            <div class="empty-ico">🖼️</div>
+            <div class="empty-text">{{ q?'ไม่พบรูปภาพ':'ยังไม่มีรูปภาพ' }}</div>
+            <div class="empty-sub">{{ q?'ลองคำค้นหาอื่น':'เริ่มต้นโดยอัปโหลดรูปภาพแรก' }}</div>
+          </div>
+
+          <!-- Grouped with collapsible -->
+          <template v-else>
+            <div v-for="(grp,dt) in grouped" :key="dt">
+              <div class="date-header" data-aos="fade-right" @click="toggleGroup(dt)">
+                <span class="date-label">{{ dt }}</span>
+                <span class="date-count">{{ grp.length }} รูป</span>
+                <i class="bi bi-chevron-down date-toggle" :class="{collapsed: collapsedGroups.includes(dt)}"></i>
+              </div>
+              <div class="date-group-body" :class="{hide: collapsedGroups.includes(dt)}"
+                :style="{maxHeight: collapsedGroups.includes(dt) ? '0px' : '9999px'}">
+                <div class="photo-grid" :class="[vMode==='list'?'list':'',selMode?'sel-mode':'']">
+                  <div v-for="(ph,i) in grp" :key="ph.id" class="p-card" :class="{picked:selected.includes(ph.id)}"
+                    data-aos="fade-up" :data-aos-delay="(i%6)*40" @click="selMode?toggleSel(ph.id):openLb(ph)">
+                    <div class="p-checkbox" @click.stop="toggleSel(ph.id)">
+                      <i class="bi bi-check2" v-if="selected.includes(ph.id)"></i>
+                    </div>
+                    <img :src="vMode==='list'?(ph.thumb||ph.url):ph.url" :alt="ph.name" loading="lazy" />
+                    <div class="p-overlay" v-if="vMode==='grid'">
+                      <div class="p-top">
+                        <button class="p-btn" :class="{'fav-on':ph.fav}" @click.stop="toggleFav(ph)"><i class="bi"
+                            :class="ph.fav?'bi-heart-fill':'bi-heart'"></i></button>
+                        <button class="p-btn" @click.stop="dlPhoto(ph)"><i class="bi bi-download"></i></button>
+                        <button class="p-btn" @click.stop="trashPhoto(ph)"><i class="bi bi-trash3"></i></button>
+                      </div>
+                      <div><span class="p-date">{{ fmtDate(ph.ts) }}</span></div>
+                    </div>
+                    <template v-if="vMode==='list'">
+                      <div class="p-list-info">
+                        <div class="p-list-name">{{ ph.name }}</div>
+                        <div class="p-list-meta">{{ fmtDate(ph.ts) }} · {{ fmtSz(ph.size) }}</div>
+                      </div>
+                      <div class="p-list-actions">
+                        <button class="p-btn" :class="{'fav-on':ph.fav}" @click.stop="toggleFav(ph)"><i class="bi"
+                            :class="ph.fav?'bi-heart-fill':'bi-heart'"></i></button>
+                        <button class="p-btn" @click.stop="dlPhoto(ph)"><i class="bi bi-download"></i></button>
+                        <button class="p-btn" @click.stop="trashPhoto(ph)"><i class="bi bi-trash3"></i></button>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- FAVORITES -->
+        <div v-if="view==='favorites'" class="pb-safe">
+          <div class="page-hero" data-aos="fade-right">
+            <h2>❤️ รายการโปรด</h2>
+            <p>{{ favPhotos.length }} รูปภาพ</p>
+          </div>
+          <div v-if="!favPhotos.length" class="empty">
+            <div class="empty-ico">💔</div>
+            <div class="empty-text">ยังไม่มีรายการโปรด</div>
+            <div class="empty-sub">กด ♥ บนรูปภาพที่ชื่นชอบ</div>
+          </div>
+          <div class="photo-grid" :class="vMode==='list'?'list':''">
+            <div v-for="(ph,i) in favPhotos" :key="ph.id" class="p-card" data-aos="fade-up" :data-aos-delay="i*40"
+              @click="openLb(ph)">
+              <img :src="ph.thumb||ph.url" :alt="ph.name" loading="lazy" />
+              <div class="p-overlay">
+                <div class="p-top"><button class="p-btn fav-on" @click.stop="toggleFav(ph)"><i
+                      class="bi bi-heart-fill"></i></button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ALBUMS LIST -->
+        <div v-if="view==='albums' && !currentAlbum" class="pb-safe">
+          <div class="page-hero" data-aos="fade-right"
+            style="display:flex;align-items:center;justify-content:space-between;padding-right:1.4rem">
+            <div>
+              <h2>📁 อัลบั้ม</h2>
+              <p>{{ albums.length }} อัลบั้ม</p>
+            </div>
+            <button class="tbtn" @click="showAlbumModal=true"
+              style="width:auto;padding:0 12px;gap:6px;display:flex;align-items:center;font-size:.82rem">
+              <i class="bi bi-plus-lg"></i> สร้างอัลบั้ม
+            </button>
+          </div>
+          <div v-if="!albums.length" class="empty">
+            <div class="empty-ico">📁</div>
+            <div class="empty-text">ยังไม่มีอัลบั้ม</div>
+            <div class="empty-sub">กดปุ่ม "สร้างอัลบั้ม" เพื่อเริ่มต้น</div>
+          </div>
+          <div class="album-grid">
+            <div v-for="(al,i) in albums" :key="al.id" class="album-card" data-aos="fade-up" :data-aos-delay="i*50"
+              @click="openAlbum(al)">
+              <div class="album-thumb">
+                <img v-if="albumPhotos(al.id).length" :src="albumPhotos(al.id)[0].thumb||albumPhotos(al.id)[0].url" />
+                <span v-else>📁</span>
+              </div>
+              <div class="album-foot">
+                <div class="album-name">{{ al.name }}</div>
+                <div class="album-cnt">{{ albumPhotos(al.id).length }} รูป</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ALBUM DETAIL -->
+        <div v-if="view==='albums' && currentAlbum" class="pb-safe">
+          <div class="album-detail-header" data-aos="fade-right">
+            <button class="btn-back" @click="currentAlbum=null"><i class="bi bi-arrow-left"></i></button>
+            <div>
+              <div class="album-detail-title">{{ currentAlbum.name }}</div>
+              <div class="album-detail-sub">{{ albumPhotos(currentAlbum.id).length }} รูปภาพ</div>
+            </div>
+            <div class="album-detail-actions">
+              <button class="tbtn" @click="showAddToAlbum=true" title="เพิ่มรูปในอัลบั้ม"
+                style="width:auto;padding:0 12px;gap:6px;display:flex;align-items:center;font-size:.82rem">
+                <i class="bi bi-plus-lg"></i> เพิ่มรูป
+              </button>
+              <button class="tbtn" @click="deleteAlbum(currentAlbum)" title="ลบอัลบั้ม"
+                style="color:var(--danger);border-color:rgba(233,69,96,.3)">
+                <i class="bi bi-trash3"></i>
+              </button>
+            </div>
+          </div>
+          <div v-if="!albumPhotos(currentAlbum.id).length" class="empty">
+            <div class="empty-ico">🖼️</div>
+            <div class="empty-text">ยังไม่มีรูปในอัลบั้มนี้</div>
+            <div class="empty-sub">กด "เพิ่มรูป" เพื่อเลือกรูปจากคลังภาพ</div>
+          </div>
+          <div class="photo-grid" :class="vMode==='list'?'list':''">
+            <div v-for="(ph,i) in albumPhotos(currentAlbum.id)" :key="ph.id" class="p-card" data-aos="fade-up"
+              :data-aos-delay="(i%6)*40" @click="openLbAlbum(ph)">
+              <img :src="vMode==='list'?(ph.thumb||ph.url):ph.url" :alt="ph.name" loading="lazy" />
+              <div class="p-overlay">
+                <div class="p-top">
+                  <button class="p-btn" @click.stop="removeFromAlbum(ph)" title="ลบออกจากอัลบั้ม" style="color:#ff6b6b">
+                    <i class="bi bi-folder-minus"></i>
+                  </button>
+                  <button class="p-btn" @click.stop="dlPhoto(ph)"><i class="bi bi-download"></i></button>
+                </div>
+                <div><span class="p-date">{{ fmtDate(ph.ts) }}</span></div>
+              </div>
+              <template v-if="vMode==='list'">
+                <div class="p-list-info">
+                  <div class="p-list-name">{{ ph.name }}</div>
+                  <div class="p-list-meta">{{ fmtDate(ph.ts) }} · {{ fmtSz(ph.size) }}</div>
+                </div>
+                <div class="p-list-actions">
+                  <button class="p-btn" @click.stop="removeFromAlbum(ph)" style="color:#ff6b6b"><i
+                      class="bi bi-folder-minus"></i></button>
+                  <button class="p-btn" @click.stop="dlPhoto(ph)"><i class="bi bi-download"></i></button>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRASH -->
+        <div v-if="view==='trash'" class="pb-safe">
+          <div class="page-hero" data-aos="fade-right"
+            style="display:flex;align-items:center;justify-content:space-between;padding-right:1.4rem">
+            <div>
+              <h2>🗑️ ถังขยะ</h2>
+              <p>รูปภาพที่ถูกลบ</p>
+            </div>
+            <button v-if="trashPhotos.length" class="tbtn" @click="emptyTrash"
+              style="width:auto;padding:0 12px;color:var(--danger);border-color:rgba(233,69,96,.3);font-size:.82rem;display:flex;gap:6px;align-items:center">
+              <i class="bi bi-trash3-fill"></i> ล้างถังขยะ
+            </button>
+          </div>
+          <div v-if="!trashPhotos.length" class="empty">
+            <div class="empty-ico">✅</div>
+            <div class="empty-text">ถังขยะว่างเปล่า</div>
+          </div>
+          <div class="photo-grid" :class="vMode==='list'?'list':''">
+            <div v-for="ph in trashPhotos" :key="ph.id" class="p-card" data-aos="fade-up">
+              <img :src="ph.thumb||ph.url" :alt="ph.name" loading="lazy" style="opacity:.55" />
+              <div class="p-overlay"
+                style="opacity:1;background:linear-gradient(to top,rgba(0,0,0,.7) 0%,transparent 60%)">
+                <div class="p-top">
+                  <button class="p-btn" @click.stop="restorePhoto(ph)"><i
+                      class="bi bi-arrow-counterclockwise"></i></button>
+                  <button class="p-btn" @click.stop="permDelete(ph)" style="color:#ff6b6b"><i
+                      class="bi bi-x-lg"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIGHTBOX -->
+      <div class="lb" :class="{open:lbOpen}" @click.self="lbOpen=false">
+        <div class="lb-actions">
+          <button class="lb-act-btn" @click="lbPhoto&&toggleFav(lbPhoto)"><i class="bi"
+              :class="lbPhoto&&lbPhoto.fav?'bi-heart-fill':'bi-heart'"
+              :style="lbPhoto&&lbPhoto.fav?'color:#ff6b6b':''"></i></button>
+          <button class="lb-act-btn" @click="lbPhoto&&dlPhoto(lbPhoto)"><i class="bi bi-download"></i></button>
+          <button class="lb-act-btn" @click="lbPhoto&&(trashPhoto(lbPhoto),lbOpen=false)"><i
+              class="bi bi-trash3"></i></button>
+        </div>
+        <button class="lb-close" @click="lbOpen=false"><i class="bi bi-x-lg"></i></button>
+        <button class="lb-nav lp" @click="lbPrev" v-if="lbIdx>0"><i class="bi bi-chevron-left"></i></button>
+        <img v-if="lbPhoto" :src="lbPhoto.url" class="lb-img" :alt="lbPhoto.name" />
+        <button class="lb-nav rp" @click="lbNext" v-if="lbIdx<filtered.length-1"><i
+            class="bi bi-chevron-right"></i></button>
+        <div class="lb-caption" v-if="lbPhoto">{{ lbPhoto.name }} · {{ fmtDate(lbPhoto.ts) }}<span v-if="lbPhoto.size">
+            · {{ fmtSz(lbPhoto.size) }}</span> · {{ lbIdx+1 }}/{{ filtered.length }}</div>
+      </div>
+
+      <!-- CREATE ALBUM MODAL -->
+      <div class="modal fade" :class="{show:showAlbumModal}" :style="{display:showAlbumModal?'block':'none'}"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" style="font-size:1rem">📁 สร้างอัลบั้มใหม่</h5><button class="btn-close"
+                @click="showAlbumModal=false"></button>
+            </div>
+            <div class="modal-body"><label class="form-label">ชื่ออัลบั้ม</label><input type="text" class="form-control"
+                v-model="newAlbum" placeholder="เช่น วันเกิด 2025 🎂" @keyup.enter="createAlbum" /></div>
+            <div class="modal-footer"><button class="btn btn-secondary btn-sm"
+                @click="showAlbumModal=false">ยกเลิก</button><button class="btn btn-primary btn-sm"
+                @click="createAlbum">สร้างอัลบั้ม</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-backdrop fade show" v-if="showAlbumModal" @click="showAlbumModal=false"></div>
+
+      <!-- ADD TO ALBUM MODAL -->
+      <div class="modal fade" :class="{show:showAddToAlbum}" :style="{display:showAddToAlbum?'block':'none'}"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" style="font-size:1rem">🖼️ เพิ่มรูปเข้าอัลบั้ม "{{ currentAlbum ?
+                currentAlbum.name : "" }}"</h5>
+              <button class="btn-close" @click="showAddToAlbum=false;pickerSel=[]"></button>
+            </div>
+            <div class="modal-body">
+              <p style="font-size:.8rem;color:var(--muted);margin-bottom:10px">
+                เลือกรูปที่ต้องการเพิ่ม (เลือกได้หลายรูป) · เลือกแล้ว {{ pickerSel.length }} รูป
+              </p>
+              <div class="photo-picker">
+                <div v-for="ph in allPhotos" :key="ph.id" class="picker-item"
+                  :class="{ 'picker-sel': pickerSel.includes(ph.id), 'picker-in': isInAlbum(ph.id) }"
+                  @click="!isInAlbum(ph.id) && togglePicker(ph.id)">
+                  <img :src="ph.thumb||ph.url" :alt="ph.name" loading="lazy" />
+                  <div v-if="pickerSel.includes(ph.id)"
+                    style="position:absolute;inset:0;background:rgba(240,192,64,.5);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:#0d0d0d">
+                    ✓</div>
+                  <div v-else-if="isInAlbum(ph.id)"
+                    style="position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:rgba(255,255,255,.5)">
+                    อยู่แล้ว</div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary btn-sm" @click="showAddToAlbum=false;pickerSel=[]">ยกเลิก</button>
+              <button class="btn btn-primary btn-sm" @click="confirmAddToAlbum" :disabled="!pickerSel.length">
+                เพิ่ม {{ pickerSel.length }} รูป
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-backdrop fade show" v-if="showAddToAlbum" @click="showAddToAlbum=false;pickerSel=[]"></div>
+    </div>
+
+    <!-- TOASTS -->
+    <div class="toast-stack">
+      <div v-for="t in toasts" :key="t.id" class="t-item"><span>{{ t.icon }}</span><span>{{ t.msg }}</span></div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+      from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import { getDatabase, ref, push, onValue, update, remove }
+      from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+
+    // ═══════════════════════════════════════════════════════
+    //  🔴 แก้ไข Firebase Config ของคุณที่นี่
+    // ═══════════════════════════════════════════════════════
+    const FB_CONFIG = {
+      apiKey: "AIzaSyB2NCEGJLohQT-o_1trW9hWoMtP6fYX7vM",
+      authDomain: "photos-db-65ec2.firebaseapp.com",
+      databaseURL: "https://photos-db-65ec2-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "photos-db-65ec2",
+      messagingSenderId: "383466508124",
+      appId: "1:383466508124:web:07b7226eb918ae9a9d7b99"
+    };
+
+    // 🟡 ImgBB API Key (ฟรีที่ https://imgbb.com/account/api)
+    const IMGBB_KEY = "2af234d98aba3f0040b8a9c1b2733f14";
+    // ═══════════════════════════════════════════════════════
+
+    const fbApp = initializeApp(FB_CONFIG);
+    const auth = getAuth(fbApp);
+    const db = getDatabase(fbApp);
+    const gp = new GoogleAuthProvider();
+
+    window._FB = {
+      auth, db, gp, ref, push, onValue, update, remove,
+      signInWithPopup, signOut, onAuthStateChanged, IMGBB_KEY,
+      configOk: true
+    };
+  </script>
+
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <script>
+
+    setTimeout(() => {
+      const { auth, db, gp, ref, push, onValue, update, remove,
+        signInWithPopup, signOut, onAuthStateChanged, IMGBB_KEY, configOk } = window._FB;
+      const { createApp, ref: vr, computed, onMounted } = Vue;
+
+      createApp({
+        setup() {
+          const user = vr(null), loading = vr(false), view = vr('photos');
+          const vMode = vr('grid'), selMode = vr(false), selected = vr([]);
+          const q = vr(''), sideOpen = vr(false), photos = vr([]), albums = vr([]), toasts = vr([]);
+          const uploading = vr(false), upPct = vr(0), dragging = vr(false);
+          const lbOpen = vr(false), lbPhoto = vr(null), lbIdx = vr(0);
+          const showAlbumModal = vr(false), newAlbum = vr('');
+          const collapsedGroups = vr([]);
+          const currentAlbum = vr(null);
+          const showAddToAlbum = vr(false);
+          const pickerSel = vr([]);
+
+          const allPhotos = computed(() => photos.value.filter(p => !p.deleted));
+          const favPhotos = computed(() => photos.value.filter(p => p.fav && !p.deleted));
+          const trashPhotos = computed(() => photos.value.filter(p => p.deleted));
+          const filtered = computed(() => {
+            const src = view.value === 'favorites' ? favPhotos.value : allPhotos.value;
+            return q.value ? src.filter(p => p.name.toLowerCase().includes(q.value.toLowerCase())) : src;
+          });
+          const grouped = computed(() => {
+            const g = {};
+            filtered.value.forEach(p => {
+              const d = p.ts ? new Date(p.ts).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' }) : 'ไม่ระบุ';
+              (g[d] = g[d] || []).push(p);
+            });
+            return g;
+          });
+
+          const toast = (icon, msg) => {
+            const id = Date.now();
+            toasts.value.push({ id, icon, msg });
+            setTimeout(() => { toasts.value = toasts.value.filter(t => t.id !== id); }, 3000);
+          };
+          const swal = o => Swal.fire({ background: '#161616', color: '#f0ede8', confirmButtonColor: '#f0c040', ...o });
+
+          const loginGoogle = async () => {
+            loading.value = true;
+            try { await signInWithPopup(auth, gp); }
+            catch (e) { swal({ icon: 'error', title: 'เข้าสู่ระบบไม่สำเร็จ', text: e.message }); }
+            loading.value = false;
+          };
+          const logout = async () => {
+            const r = await swal({ title: 'ออกจากระบบ?', icon: 'question', showCancelButton: true, confirmButtonText: 'ออก', cancelButtonText: 'ยกเลิก' });
+            if (r.isConfirmed) signOut(auth);
+          };
+
+          const load = uid => {
+            onValue(ref(db, `users/${uid}/photos`), s => {
+              const d = s.val();
+              photos.value = d ? Object.entries(d).map(([id, v]) => ({ id, ...v })).sort((a, b) => (b.ts || 0) - (a.ts || 0)) : [];
+              loading.value = false;
+              setTimeout(() => AOS.refresh(), 100);
+            });
+            onValue(ref(db, `users/${uid}/albums`), s => {
+              const d = s.val();
+              albums.value = d ? Object.entries(d).map(([id, v]) => ({ id, ...v })) : [];
+            });
+          };
+
+          const imgbbUpload = async file => {
+            const fd = new FormData();
+            fd.append('image', file);
+            fd.append('key', IMGBB_KEY);
+            const r = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: fd });
+            const j = await r.json();
+            if (!j.success) throw new Error(j.error?.message || 'Upload failed');
+            return { url: j.data.url, thumb: j.data.thumb?.url || j.data.url, delete_url: j.data.delete_url };
+          };
+
+          const uploadFiles = async e => {
+            const files = e.target ? Array.from(e.target.files) : e;
+            if (!files.length) return;
+            if (IMGBB_KEY === 'YOUR_IMGBB_API_KEY') {
+              swal({ icon: 'warning', title: 'ยังไม่ตั้งค่า ImgBB', text: 'กรุณาใส่ IMGBB_KEY ในไฟล์ก่อนอัปโหลด' }); return;
+            }
+            uploading.value = true; upPct.value = 0;
+            let done = 0;
+            for (const file of files) {
+              try {
+                const { url, thumb } = await imgbbUpload(file);
+                await push(ref(db, `users/${user.value.uid}/photos`), {
+                  name: file.name, url, thumb, size: file.size, ts: Date.now(), fav: false, deleted: false
+                });
+                toast('📷', `"${file.name}" อัปโหลดสำเร็จ`);
+              } catch { toast('❌', `"${file.name}" ล้มเหลว`); }
+              upPct.value = Math.round(++done / files.length * 100);
+            }
+            uploading.value = false;
+            if (e.target) e.target.value = '';
+          };
+
+          const onDrop = e => {
+            dragging.value = false;
+            const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+            if (files.length) uploadFiles(files);
+          };
+
+          const openLb = ph => { lbPhoto.value = ph; lbIdx.value = filtered.value.findIndex(p => p.id === ph.id); lbOpen.value = true; };
+          const lbPrev = () => { if (lbIdx.value > 0) { lbIdx.value--; lbPhoto.value = filtered.value[lbIdx.value]; } };
+          const lbNext = () => { if (lbIdx.value < filtered.value.length - 1) { lbIdx.value++; lbPhoto.value = filtered.value[lbIdx.value]; } };
+
+          const toggleFav = async ph => {
+            await update(ref(db, `users/${user.value.uid}/photos/${ph.id}`), { fav: !ph.fav });
+            toast(ph.fav ? '💔' : '❤️', ph.fav ? 'ลบออกจากรายการโปรด' : 'เพิ่มในรายการโปรด');
+          };
+          const trashPhoto = async ph => {
+            const r = await swal({ title: 'ย้ายไปถังขยะ?', text: ph.name, icon: 'warning', showCancelButton: true, confirmButtonText: 'ย้าย', cancelButtonText: 'ยกเลิก' });
+            if (r.isConfirmed) { await update(ref(db, `users/${user.value.uid}/photos/${ph.id}`), { deleted: true, deletedAt: Date.now() }); toast('🗑️', 'ย้ายไปถังขยะแล้ว'); }
+          };
+          const restorePhoto = async ph => {
+            await update(ref(db, `users/${user.value.uid}/photos/${ph.id}`), { deleted: false, deletedAt: null });
+            toast('✅', 'กู้คืนสำเร็จ');
+          };
+          const permDelete = async ph => {
+            const r = await swal({ title: 'ลบถาวร?', text: 'ไม่สามารถกู้คืนได้', icon: 'error', showCancelButton: true, confirmButtonText: 'ลบถาวร', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#e94560' });
+            if (r.isConfirmed) { await remove(ref(db, `users/${user.value.uid}/photos/${ph.id}`)); toast('🗑️', 'ลบถาวรแล้ว'); }
+          };
+          const emptyTrash = async () => {
+            const r = await swal({ title: `ล้างถังขยะ ${trashPhotos.value.length} รูป?`, icon: 'error', showCancelButton: true, confirmButtonText: 'ล้าง', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#e94560' });
+            if (r.isConfirmed) { for (const ph of trashPhotos.value) await remove(ref(db, `users/${user.value.uid}/photos/${ph.id}`)); toast('✅', 'ล้างถังขยะสำเร็จ'); }
+          };
+          const dlPhoto = ph => { const a = document.createElement('a'); a.href = ph.url; a.download = ph.name; a.target = '_blank'; a.click(); toast('📥', 'กำลังดาวน์โหลด'); };
+
+          const toggleSel = id => { const i = selected.value.indexOf(id); i > -1 ? selected.value.splice(i, 1) : selected.value.push(id); };
+          const clearSel = () => { selected.value = []; selMode.value = false; };
+          const bulkFav = async () => { for (const id of selected.value) await update(ref(db, `users/${user.value.uid}/photos/${id}`), { fav: true }); toast('❤️', `เพิ่ม ${selected.value.length} รูปในรายการโปรด`); clearSel(); };
+          const bulkDel = async () => {
+            const r = await swal({ title: `ย้าย ${selected.value.length} รูปไปถังขยะ?`, icon: 'warning', showCancelButton: true, confirmButtonText: 'ย้าย', cancelButtonText: 'ยกเลิก' });
+            if (r.isConfirmed) { for (const id of selected.value) await update(ref(db, `users/${user.value.uid}/photos/${id}`), { deleted: true, deletedAt: Date.now() }); toast('🗑️', `ย้าย ${selected.value.length} รูปแล้ว`); clearSel(); }
+          };
+          const bulkDl = () => { selected.value.forEach(id => { const ph = photos.value.find(p => p.id === id); if (ph) dlPhoto(ph); }); clearSel(); };
+
+          const createAlbum = async () => {
+            if (!newAlbum.value.trim()) return;
+            await push(ref(db, `users/${user.value.uid}/albums`), { name: newAlbum.value.trim(), createdAt: Date.now() });
+            newAlbum.value = ''; showAlbumModal.value = false; toast('📁', 'สร้างอัลบั้มสำเร็จ');
+          };
+
+          // ── ALBUM DETAIL ──
+          const openAlbum = al => { currentAlbum.value = al; };
+
+          const albumPhotos = albumId => {
+            return allPhotos.value.filter(p => p.albums && p.albums[albumId]);
+          };
+
+          const isInAlbum = photoId => {
+            if (!currentAlbum.value) return false;
+            const ph = photos.value.find(p => p.id === photoId);
+            return !!(ph && ph.albums && ph.albums[currentAlbum.value.id]);
+          };
+
+          const togglePicker = id => {
+            const i = pickerSel.value.indexOf(id);
+            i > -1 ? pickerSel.value.splice(i, 1) : pickerSel.value.push(id);
+          };
+
+          const confirmAddToAlbum = async () => {
+            if (!currentAlbum.value || !pickerSel.value.length) return;
+            const albumId = currentAlbum.value.id;
+            for (const photoId of pickerSel.value) {
+              await update(ref(db, `users/${user.value.uid}/photos/${photoId}/albums`), { [albumId]: true });
+            }
+            toast('📁', `เพิ่ม ${pickerSel.value.length} รูปเข้าอัลบั้มสำเร็จ`);
+            pickerSel.value = [];
+            showAddToAlbum.value = false;
+          };
+
+          const removeFromAlbum = async ph => {
+            if (!currentAlbum.value) return;
+            const albumId = currentAlbum.value.id;
+            const r = await swal({ title: 'ลบออกจากอัลบั้ม?', text: ph.name, icon: 'question', showCancelButton: true, confirmButtonText: 'ลบออก', cancelButtonText: 'ยกเลิก' });
+            if (r.isConfirmed) {
+              await update(ref(db, `users/${user.value.uid}/photos/${ph.id}/albums`), { [albumId]: null });
+              toast('📁', 'ลบออกจากอัลบั้มแล้ว');
+            }
+          };
+
+          const deleteAlbum = async al => {
+            const r = await swal({ title: `ลบอัลบั้ม "${al.name}"?`, text: 'รูปภาพจะไม่ถูกลบ แค่ลบอัลบั้มเท่านั้น', icon: 'warning', showCancelButton: true, confirmButtonText: 'ลบอัลบั้ม', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#e94560' });
+            if (r.isConfirmed) {
+              // Remove album reference from all photos
+              for (const ph of albumPhotos(al.id)) {
+                await update(ref(db, `users/${user.value.uid}/photos/${ph.id}/albums`), { [al.id]: null });
+              }
+              await remove(ref(db, `users/${user.value.uid}/albums/${al.id}`));
+              currentAlbum.value = null;
+              toast('🗑️', 'ลบอัลบั้มสำเร็จ');
+            }
+          };
+
+          const openLbAlbum = ph => {
+            const list = albumPhotos(currentAlbum.value.id);
+            lbPhoto.value = ph;
+            lbIdx.value = list.findIndex(p => p.id === ph.id);
+            lbOpen.value = true;
+          };
+
+          const toggleGroup = dt => {
+            const i = collapsedGroups.value.indexOf(dt);
+            i > -1 ? collapsedGroups.value.splice(i, 1) : collapsedGroups.value.push(dt);
+          };
+          const collapseAll = () => { collapsedGroups.value = Object.keys(grouped.value); };
+          const expandAll = () => { collapsedGroups.value = []; };
+
+          const fmtDate = ts => ts ? new Date(ts).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+          const fmtSz = b => !b ? '' : b < 1048576 ? `${(b / 1024).toFixed(0)} KB` : `${(b / 1048576).toFixed(1)} MB`;
+          const setView = v => { view.value = v; sideOpen.value = false; };
+
+          onMounted(() => {
+            AOS.init({ once: true, duration: 450, offset: 20 });
+            window.addEventListener('keydown', e => {
+              if (!lbOpen.value) return;
+              if (e.key === 'ArrowLeft') lbPrev();
+              if (e.key === 'ArrowRight') lbNext();
+              if (e.key === 'Escape') lbOpen.value = false;
+            });
+            onAuthStateChanged(auth, u => {
+              user.value = u;
+              if (u) { loading.value = true; load(u.uid); } else loading.value = false;
+            });
+          });
+
+          return {
+            user, loading, view, vMode, selMode, selected, q, sideOpen,
+            photos, allPhotos, favPhotos, trashPhotos, filtered, grouped, albums,
+            toasts, uploading, upPct, dragging, lbOpen, lbPhoto, lbIdx,
+            showAlbumModal, newAlbum, configOk,
+            currentAlbum, showAddToAlbum, pickerSel,
+            loginGoogle, logout, uploadFiles, onDrop,
+            openLb, lbPrev, lbNext,
+            toggleFav, trashPhoto, restorePhoto, permDelete, emptyTrash, dlPhoto,
+            toggleSel, clearSel, bulkFav, bulkDel, bulkDl,
+            collapsedGroups, toggleGroup, collapseAll, expandAll,
+            createAlbum, setView, fmtDate, fmtSz,
+            openAlbum, albumPhotos, isInAlbum, togglePicker,
+            confirmAddToAlbum, removeFromAlbum, deleteAlbum, openLbAlbum
+          };
+        }
+      }).mount('#app');
+    }, 600);
+  </script>
+</body>
+
+</html>
