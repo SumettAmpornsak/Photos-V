@@ -1306,6 +1306,91 @@
         columns: 5
       }
     }
+
+    /* ---- Picker แบบ List (เพิ่มรูปในอัลบั้ม) ---- */
+    .photo-picker.list-mode {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 4px;
+    }
+
+    .photo-picker.list-mode .picker-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--t);
+      position: relative;
+    }
+
+    .photo-picker.list-mode .picker-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(240, 192, 64, 0.3);
+    }
+
+    .photo-picker.list-mode .picker-item.picker-in {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .photo-picker.list-mode .picker-thumb {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      flex-shrink: 0;
+      background: var(--surface);
+    }
+
+    .photo-picker.list-mode .picker-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .photo-picker.list-mode .picker-name {
+      font-size: 0.9rem;
+      font-weight: 400;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+
+    .photo-picker.list-mode .picker-meta {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .photo-picker.list-mode .picker-status {
+      flex-shrink: 0;
+      margin-left: auto;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .badge-sel {
+      background: var(--accent);
+      color: var(--bg);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .badge-in {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--muted);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
   </style>
 </head>
 
@@ -1677,21 +1762,28 @@
                 currentAlbum.name : "" }}"</h5>
               <button class="btn-close" @click="showAddToAlbum=false;pickerSel=[]"></button>
             </div>
+            <!-- ADD TO ALBUM MODAL (ส่วน modal-body) -->
             <div class="modal-body">
               <p style="font-size:.8rem;color:var(--muted);margin-bottom:10px">
                 เลือกรูปที่ต้องการเพิ่ม (เลือกได้หลายรูป) · เลือกแล้ว {{ pickerSel.length }} รูป
               </p>
-              <div class="photo-picker">
+              <div class="photo-picker list-mode">
                 <div v-for="ph in allPhotos" :key="ph.id" class="picker-item"
                   :class="{ 'picker-sel': pickerSel.includes(ph.id), 'picker-in': isInAlbum(ph.id) }"
                   @click="!isInAlbum(ph.id) && togglePicker(ph.id)">
-                  <img :src="ph.thumb||ph.url" :alt="ph.name" loading="lazy" />
-                  <div v-if="pickerSel.includes(ph.id)"
-                    style="position:absolute;inset:0;background:rgba(240,192,64,.5);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;color:#0d0d0d">
-                    ✓</div>
-                  <div v-else-if="isInAlbum(ph.id)"
-                    style="position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:rgba(255,255,255,.5)">
-                    อยู่แล้ว</div>
+
+                  <img :src="ph.thumb || ph.url" class="picker-thumb" :alt="ph.name" loading="lazy" />
+
+                  <div class="picker-info">
+                    <div class="picker-name">{{ ph.name }}</div>
+                    <div class="picker-meta">{{ fmtDate(ph.ts) }} · {{ fmtSz(ph.size) }}</div>
+                  </div>
+
+                  <div class="picker-status">
+                    <span v-if="pickerSel.includes(ph.id)" class="badge-sel">✓ เลือกแล้ว</span>
+                    <span v-else-if="isInAlbum(ph.id)" class="badge-in">อยู่ในอัลบั้มแล้ว</span>
+                    <!-- ถ้าไม่选中且不在อัลบั้ม จะไม่แสดง badge -->
+                  </div>
                 </div>
               </div>
             </div>
