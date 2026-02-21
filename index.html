@@ -1391,6 +1391,37 @@
       padding: 4px 10px;
       border-radius: 20px;
     }
+
+    /* dropdown menu สไตล์เข้ากับธีม */
+    .dropdown-menu {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.4rem 0;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .dropdown-item {
+      color: var(--text);
+      font-size: 0.85rem;
+      padding: 0.5rem 1.2rem;
+      transition: var(--t);
+    }
+
+    .dropdown-item:hover {
+      background: rgba(240, 192, 64, 0.1);
+      color: var(--accent);
+    }
+
+    .dropdown-item.text-danger:hover {
+      background: rgba(233, 69, 96, 0.1);
+      color: var(--danger) !important;
+    }
+
+    .dropdown-divider {
+      border-color: var(--border);
+      margin: 0.3rem 0;
+    }
   </style>
 </head>
 
@@ -1487,6 +1518,23 @@
                 class="bi bi-arrows-collapse"></i></div>
             <div class="tbtn" v-if="view==='photos' && collapsedGroups.length" @click="expandAll" title="ขยายทั้งหมด"><i
                 class="bi bi-arrows-expand"></i></div>
+
+            <!-- Dropdown จัดการ (เลือกทั้งหมด, ลบทั้งหมด) -->
+            <div class="dropdown d-inline-block">
+              <button class="tbtn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#" @click.prevent="selectAllPhotos">✅ เลือกทั้งหมด</a></li>
+                <li><a class="dropdown-item" href="#" @click.prevent="deselectAll">🔲 ยกเลิกการเลือกทั้งหมด</a></li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item text-danger" href="#" @click.prevent="deleteAllPhotos">🗑️ ลบทั้งหมด</a>
+                </li>
+              </ul>
+            </div>
+
             <div class="tbtn"><label><input type="file" accept="image/*" multiple @change="uploadFiles" /><i
                   class="bi bi-cloud-upload"></i></label></div>
           </div>
@@ -1543,7 +1591,8 @@
                     <div class="p-checkbox" @click.stop="toggleSel(ph.id)">
                       <i class="bi bi-check2" v-if="selected.includes(ph.id)"></i>
                     </div>
-                    <img :src="vMode==='list'?(ph.thumb||ph.url):ph.url" :alt="ph.name" loading="lazy" />
+                    <!-- ใช้ thumbnail เสมอสำหรับรูปขนาดเล็ก โหลดเร็ว -->
+                    <img :src="ph.thumb || ph.url" :alt="ph.name" loading="lazy" />
                     <div class="p-overlay" v-if="vMode==='grid'">
                       <div class="p-top">
                         <button class="p-btn" :class="{'fav-on':ph.fav}" @click.stop="toggleFav(ph)"><i class="bi"
@@ -1655,7 +1704,8 @@
           <div class="photo-grid" :class="vMode==='list'?'list':''">
             <div v-for="(ph,i) in albumPhotos(currentAlbum.id)" :key="ph.id" class="p-card" data-aos="fade-up"
               :data-aos-delay="(i%6)*40" @click="openLbAlbum(ph)">
-              <img :src="vMode==='list'?(ph.thumb||ph.url):ph.url" :alt="ph.name" loading="lazy" />
+              <!-- ใช้ thumbnail เช่นกัน -->
+              <img :src="ph.thumb || ph.url" :alt="ph.name" loading="lazy" />
               <div class="p-overlay">
                 <div class="p-top">
                   <button class="p-btn" @click.stop="removeFromAlbum(ph)" title="ลบออกจากอัลบั้ม" style="color:#ff6b6b">
@@ -1714,7 +1764,7 @@
         </div>
       </div>
 
-      <!-- LIGHTBOX -->
+      <!-- LIGHTBOX (ใช้รูปความละเอียดปกติ) -->
       <div class="lb" :class="{open:lbOpen}" @click.self="lbOpen=false">
         <div class="lb-actions">
           <button class="lb-act-btn" @click="lbPhoto&&toggleFav(lbPhoto)"><i class="bi"
@@ -1870,7 +1920,10 @@
           const favPhotos = computed(() => photos.value.filter(p => p.fav && !p.deleted));
           const trashPhotos = computed(() => photos.value.filter(p => p.deleted));
           const filtered = computed(() => {
-            const src = view.value === 'favorites' ? favPhotos.value : allPhotos.value;
+            const src = view.value === 'favorites' ? favPhotos.value : 
+                        (view.value === 'photos' ? allPhotos.value : 
+                        (view.value === 'albums' && currentAlbum.value ? albumPhotos(currentAlbum.value.id) : 
+                        (view.value === 'trash' ? trashPhotos.value : [])));
             return q.value ? src.filter(p => p.name.toLowerCase().includes(q.value.toLowerCase())) : src;
           });
           const grouped = computed(() => {
@@ -1951,7 +2004,12 @@
             if (files.length) uploadFiles(files);
           };
 
-          const openLb = ph => { lbPhoto.value = ph; lbIdx.value = filtered.value.findIndex(p => p.id === ph.id); lbOpen.value = true; };
+          const openLb = ph => { 
+            if (!ph) return;
+            lbPhoto.value = ph; 
+            lbIdx.value = filtered.value.findIndex(p => p.id === ph.id); 
+            lbOpen.value = true; 
+          };
           const lbPrev = () => { if (lbIdx.value > 0) { lbIdx.value--; lbPhoto.value = filtered.value[lbIdx.value]; } };
           const lbNext = () => { if (lbIdx.value < filtered.value.length - 1) { lbIdx.value++; lbPhoto.value = filtered.value[lbIdx.value]; } };
 
@@ -2058,9 +2116,39 @@
           const collapseAll = () => { collapsedGroups.value = Object.keys(grouped.value); };
           const expandAll = () => { collapsedGroups.value = []; };
 
+          // ===== ฟังก์ชันใหม่สำหรับจัดการทั้งหมด =====
+          const selectAllPhotos = () => {
+            selMode.value = true;
+            selected.value = filtered.value.map(p => p.id);
+          };
+          const deselectAll = () => {
+            selected.value = [];
+            // ถ้าต้องการปิดโหมดเลือกพร้อมกันสามารถใส่ selMode.value = false; ได้
+          };
+          const deleteAllPhotos = async () => {
+            if (!filtered.value.length) return;
+            const r = await swal({
+              title: `ลบทั้งหมด ${filtered.value.length} รูป?`,
+              text: 'รูปภาพทั้งหมดในมุมมองนี้จะถูกย้ายไปถังขยะ',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'ลบทั้งหมด',
+              cancelButtonText: 'ยกเลิก',
+              confirmButtonColor: '#e94560'
+            });
+            if (r.isConfirmed) {
+              for (const ph of filtered.value) {
+                await update(ref(db, `users/${user.value.uid}/photos/${ph.id}`), { deleted: true, deletedAt: Date.now() });
+              }
+              toast('🗑️', `ย้าย ${filtered.value.length} รูปไปถังขยะแล้ว`);
+              // เคลียร์การเลือก
+              selected.value = [];
+            }
+          };
+
           const fmtDate = ts => ts ? new Date(ts).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
           const fmtSz = b => !b ? '' : b < 1048576 ? `${(b / 1024).toFixed(0)} KB` : `${(b / 1048576).toFixed(1)} MB`;
-          const setView = v => { view.value = v; sideOpen.value = false; };
+          const setView = v => { view.value = v; sideOpen.value = false; currentAlbum.value = null; }; // reset album detail when switching views
 
           onMounted(() => {
             AOS.init({ once: true, duration: 450, offset: 20 });
@@ -2089,7 +2177,9 @@
             collapsedGroups, toggleGroup, collapseAll, expandAll,
             createAlbum, setView, fmtDate, fmtSz,
             openAlbum, albumPhotos, isInAlbum, togglePicker,
-            confirmAddToAlbum, removeFromAlbum, deleteAlbum, openLbAlbum
+            confirmAddToAlbum, removeFromAlbum, deleteAlbum, openLbAlbum,
+            // เพิ่ม methods ใหม่
+            selectAllPhotos, deselectAll, deleteAllPhotos
           };
         }
       }).mount('#app');
